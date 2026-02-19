@@ -3,8 +3,6 @@
 #include <stdint.h>
 #include "keyboard_driver.h"
 
-
-
 static size_t terminal_row;
 static size_t terminal_column;
 static uint8_t terminal_color;
@@ -31,8 +29,6 @@ enum vga_color {
 
 static const size_t VGA_WIDTH = 80;
 static const size_t VGA_HEIGHT = 25;
-
-
 
 static inline uint8_t vga_entry_color(enum vga_color fg, enum vga_color bg) {
     return fg | (bg << 4);
@@ -136,6 +132,10 @@ static void terminal_backspace(void) {
 }
 
 
+static void delay(uint32_t seconds) {
+    for (uint32_t i = 0; i < seconds * 1000000; i++)
+        __asm__ __volatile__("nop");
+}
 
 static void int_to_string(int value, char* str) {
     char buffer[32];
@@ -186,7 +186,7 @@ static int string_to_int(const char* str, size_t* index) {
 }
 
 static void calculate_expression(const char* input) {
-    size_t i = 5; // после "!calc"
+    size_t i = 5;
 
     while (input[i] == ' ') i++;
 
@@ -226,8 +226,6 @@ static void calculate_expression(const char* input) {
     terminal_writestring("\n");
 }
 
-
-
 static void terminal_readstring(char* buffer, size_t max_length) {
     size_t length = 0;
 
@@ -251,11 +249,9 @@ static void terminal_readstring(char* buffer, size_t max_length) {
     buffer[length] = '\0';
 }
 
-
-
 static void handle_input(char* input) {
-
     if (strcmp(input, "!ZenOS") == 0) {
+
         terminal_writestring("                              -=====+=---::. :%@%##%@%+.            \n");
         terminal_writestring("                             +@@@@%*######%%%%#+++++**#%+           \n");
         terminal_writestring("                            :@@@@@%++++++++++++*%%%%#+++#%=         \n");
@@ -291,39 +287,43 @@ static void handle_input(char* input) {
         terminal_writestring("                            -@@@@@%+++++++++*@@@@@@++++++#@=:.      \n");
         terminal_writestring("                             *@@@@@*++++++++++##%%*+++++#@@@%=      \n");
         terminal_writestring("                              =+++#%@%##*************##%@%*-        \n");
-
     } else if (strncmp(input, "!calc", 5) == 0) {
-
         calculate_expression(input);
-
     } else if (strcmp(input, "!clear") == 0) {
-
         terminal_initialize();
-
     } else if (strcmp(input, "!help") == 0) {
-
         terminal_writestring("Available commands:\n");
         terminal_writestring("!ZenOS  - Display ZenOS logo\n");
         terminal_writestring("!calc   - Simple calculator\n");
         terminal_writestring("!clear  - Clear screen\n");
         terminal_writestring("!help   - Show commands\n");
-
     } else {
-
         terminal_writestring("Unknown command. Type !help\n");
     }
 }
 
-
-
 void kernel_main(void) {
     terminal_initialize();
+
     terminal_writestring("Welcome To ZenOS\n");
+    terminal_showcursor();
+
+    delay(5000);
+
+
+    terminal_initialize();
+
+    char input[256];
 
     while (true) {
+        uint8_t prev_color = terminal_color;
+
+        terminal_color = vga_entry_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
+
         terminal_writestring("ZenOS> ");
 
-        char input[256];
+        terminal_color = prev_color;
+
         terminal_readstring(input, sizeof(input));
 
         if (strlen(input) > 0)
