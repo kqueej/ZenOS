@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include "keyboard_driver.h"
+#define PI 3.14159265358979323846
 
 static size_t terminal_row;
 static size_t terminal_column;
@@ -185,19 +186,143 @@ static int string_to_int(const char* str, size_t* index) {
     return negative ? -result : result;
 }
 
+//Calc trig
+static double abs_double(double x) {
+    return x < 0 ? -x : x;
+}
+
+
+static double __attribute__((unused)) pow_double(double base, int exp) {
+    double result = 1.0;
+    for (int i = 0; i < exp; i++)
+        result *= base;
+    return result;
+}
+
+// sin
+static double sin_double(double x) {
+    double term = x;
+    double sum = x;
+
+    for (int n = 1; n < 10; n++) {
+        term *= -x * x / ((2*n) * (2*n + 1));
+        sum += term;
+    }
+
+    return sum;
+}
+
+// cos
+static double cos_double(double x) {
+    double term = 1.0;
+    double sum = 1.0;
+
+    for (int n = 1; n < 10; n++) {
+        term *= -x * x / ((2*n - 1) * (2*n));
+        sum += term;
+    }
+
+    return sum;
+}
+//tan
+static double tan_double(double x) {
+    double c = cos_double(x);
+    if (abs_double(c) < 0.000001)
+        return 0; // защита
+    return sin_double(x) / c;
+}
+//
+static void double_to_string(double value, char* str) {
+    int int_part = (int)value;
+    double frac = value - int_part;
+
+    if (frac < 0) frac = -frac;
+
+    char buffer[32];
+    int_to_string(int_part, buffer);
+
+    size_t i = 0;
+    while (buffer[i]) {
+        str[i] = buffer[i];
+        i++;
+    }
+
+    str[i++] = '.';
+
+    for (int j = 0; j < 6; j++) {
+        frac *= 10;
+        int digit = (int)frac;
+        str[i++] = '0' + digit;
+        frac -= digit;
+    }
+
+    str[i] = '\0';
+}
+//calc
 static void calculate_expression(const char* input) {
     size_t i = 5;
 
     while (input[i] == ' ') i++;
 
+
+    if (strncmp(&input[i], "sin", 3) == 0) {
+        i += 3;
+        while (input[i] == ' ') i++;
+
+        int angle = string_to_int(input, &i);
+
+        double rad = angle * PI / 180.0;
+        double result = sin_double(rad);
+
+        char buffer[64];
+        double_to_string(result, buffer);
+
+        terminal_writestring("Result: ");
+        terminal_writestring(buffer);
+        terminal_writestring("\n");
+        return;
+    }
+
+    if (strncmp(&input[i], "cos", 3) == 0) {
+        i += 3;
+        while (input[i] == ' ') i++;
+
+        int angle = string_to_int(input, &i);
+
+        double rad = angle * PI / 180.0;
+        double result = cos_double(rad);
+
+        char buffer[64];
+        double_to_string(result, buffer);
+
+        terminal_writestring("Result: ");
+        terminal_writestring(buffer);
+        terminal_writestring("\n");
+        return;
+    }
+
+    if (strncmp(&input[i], "tan", 3) == 0) {
+        i += 3;
+        while (input[i] == ' ') i++;
+
+        int angle = string_to_int(input, &i);
+
+        double rad = angle * PI / 180.0;
+        double result = tan_double(rad);
+
+        char buffer[64];
+        double_to_string(result, buffer);
+
+        terminal_writestring("Result: ");
+        terminal_writestring(buffer);
+        terminal_writestring("\n");
+        return;
+    }
+
     int a = string_to_int(input, &i);
-
     while (input[i] == ' ') i++;
-
     char op = input[i++];
-
     while (input[i] == ' ') i++;
-
     int b = string_to_int(input, &i);
 
     int result;
@@ -214,7 +339,7 @@ static void calculate_expression(const char* input) {
             result = a / b;
             break;
         default:
-            terminal_writestring("Invalid operator. Use + - * /\n");
+            terminal_writestring("Invalid operator\n");
             return;
     }
 
@@ -297,6 +422,9 @@ static void handle_input(char* input) {
         terminal_writestring("!calc   - Simple calculator\n");
         terminal_writestring("!clear  - Clear screen\n");
         terminal_writestring("!help   - Show commands\n");
+		terminal_writestring("!calc sin X  - sine (degrees)\n");
+		terminal_writestring("!calc cos X  - cosine (degrees)\n");
+		terminal_writestring("!calc tan X  - tangent (degrees)\n");
     } else {
         terminal_writestring("Unknown command. Type !help\n");
     }
