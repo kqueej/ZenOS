@@ -51,44 +51,8 @@
 - **`Makefile`** — Build automation file.
 - **`keyboard_driver.c`** — Driver for your keyboard on C with special characters.
 
-## Development and Contributing
 
-If you would like to contribute to the project, follow these steps:
-
-1. **Create a branch**:
-
-    ```bash
-    git checkout -b feature-branch
-    ```
-
-2. **Make your changes** and test them.
-
-3. **Commit your changes**:
-
-    ```bash
-    git commit -am 'Added new feature'
-    ```
-
-4. **Push your changes**:
-
-    ```bash
-    git push origin feature-branch
-    ```
-
-5. **Create a Pull Request** on GitHub, describing your changes and their purpose.
-
-## License
-
-This project is licensed under the GNU General Public License v3.0 (GPL-3.0). See [LICENSE](LICENSE) for more details.
 
 ## Contact
 
 If you have any questions or suggestions, you can reach out to the project maintainer through GitHub or via email: alexandrd542@gmail.com
-
-
-## Creators 
-
-Coder - Junsious ([GitHub](https://github.com/junsious))
-
-Designer - Konrad ([GitHub](https://github.com/WilliamKonRaDDD))
-
