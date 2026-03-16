@@ -5,7 +5,7 @@
 #define KEYBOARD_DATA_PORT 0x60
 #define KEYBOARD_STATUS_PORT 0x64
 
-// Карта клавиатуры для обычного ввода
+
 static const char keyboard_map[256] = {
     0, 27, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b', '\t',
     'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n', 0,
@@ -14,7 +14,7 @@ static const char keyboard_map[256] = {
     '*', 0, ' ', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
-// Карта клавиатуры для Shift
+
 static const char shift_keyboard_map[256] = {
     0, 27, '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '\b', '\t',
     'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', '\n', 0,
@@ -23,7 +23,7 @@ static const char shift_keyboard_map[256] = {
     '*', 0, ' ', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
-// Модификаторы клавиш
+
 #define SHIFT_LEFT 0x2A
 #define SHIFT_RIGHT 0x36
 #define CTRL_LEFT 0x1D
@@ -47,19 +47,19 @@ static inline uint8_t inb(uint16_t port) {
     return ret;
 }
 
-// Чтение с клавиатуры
+
 char keyboard_read(void) {
     uint8_t scan_code;
     char ch = 0;
 
-    // Ожидание ввода с клавиатуры
+
     while ((inb(KEYBOARD_STATUS_PORT) & 0x01) == 0) {
-        // Ожидание данных
+
     }
 
     scan_code = inb(KEYBOARD_DATA_PORT);
 
-    // Обработка модификаторов
+
     switch (scan_code) {
         case SHIFT_LEFT:
         case SHIFT_RIGHT:
@@ -85,7 +85,7 @@ char keyboard_read(void) {
             break;
     }
 
-    // Преобразование в символ
+
     if (shift_pressed) {
         ch = shift_keyboard_map[scan_code];
     } else {
@@ -95,8 +95,8 @@ char keyboard_read(void) {
     return ch;
 }
 
-// Инициализация клавиатуры
+
 void keyboard_initialize(void) {
-    // Сброс клавиатурного контроллера
+
     outb(KEYBOARD_STATUS_PORT, 0xFF);
 }
