@@ -11,7 +11,7 @@
 
 
   
-- `ZenOS` is an educational project aimed at creating an operating system from scratch. The project includes a kernel written in both C and Rust, with basic functionality for text output and command input support. This project is intended to provide hands-on experience in operating system development, cross-compilation, and low-level programming. The project will also develop.
+- `ZenOS` is an educational project aimed at creating an operating system from scratch. The project includes a kernel written in both C, with basic functionality for text output and command input support. This project is intended to provide hands-on experience in operating system development, cross-compilation, and low-level programming. The project will also develop.
 
 ## Building and Running
 
