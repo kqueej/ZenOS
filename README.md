@@ -28,5 +28,5 @@
 3. **Run the ISO image with QEMU**:
 
     ```bash
-    qemu-system-i386 -cdrom ZenOS.iso
+    qemu-system-i386 -cdrom ZenOS.iso / qemu-system-i386 -cdrom ZenOS.bin -curses 
     ```
